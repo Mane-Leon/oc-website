@@ -26,63 +26,35 @@
   <tbody id="tabla-ocs"></tbody>
 </table>
 
-<script type="module">
-  import { auth, db } from "./js/firebase.js";
-  import { onAuthStateChanged, signOut } from
-    "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { collection, getDocs } from
-    "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>OC Sistema | Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
+<h1>Dashboard</h1>
 
+<p id="estado"></p>
 
+<nav>
+  <button onclick="window.location.href='ocs.html'">
+    Órdenes de Compra
+  </button>
 
-  async function listarOCs() {
-    const tbody = document.getElementById("tabla-ocs");
-    tbody.innerHTML = "";
+  <button onclick="logout()">
+    Cerrar sesión
+  </button>
+</nav>
 
-    const snapshot = await getDocs(collection(db, "ordenes_compra"));
-    console.log("Colección ordenes_compra, docs encontrados:", snapshot.size);
+<section>
+  <p>Bienvenido al sistema interno de control.</p>
+  <p>Desde aquí podrás acceder a los módulos disponibles.</p>
+</section>
 
-
-    snapshot.forEach((doc) => {
-      const d = doc.data();
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${doc.id}</td>
-        <td>${d.cliente || ""}</td>
-        <td>${d.estado || ""}</td>
-        <td>${d.prioridad || ""}</td>
-        <td>${d.fecha_oc || ""}</td>
-        <td>${d.vendedor_nombre || ""}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    document.getElementById("estado").innerText =
-      "Sesión iniciada como: " + user.email;
-
-    await listarOCs();
-  });
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("logout");
-    if (btn) {
-      btn.addEventListener("click", async () => {
-        await signOut(auth);
-        window.location.href = "login.html";
-      });
-    }
-  });
-
-</script>
+<script type="module" src="js/auth.js"></script>
 
 </body>
 </html>
