@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Ingreso al sistema</h2>
+<h2>Login</h2>
 
-<input type="email" id="email" placeholder="Correo">
-<input type="password" id="password" placeholder="Contraseña">
+<input id="email" placeholder="Correo">
+<input id="password" type="password" placeholder="Contraseña">
 <button id="loginBtn">Entrar</button>
 
 <p id="msg"></p>
 
-<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/auth-guard.js"></script>
+<script type="module" src="js/login.js"></script>
 </body>
 </html>

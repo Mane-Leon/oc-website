@@ -2,31 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>OC Sistema | Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Dashboard</title>
 </head>
 <body>
 
 <h1>Dashboard</h1>
-
 <p id="estado"></p>
 
-<nav>
-  <button onclick="window.location.href='ocs.html'">
-    Órdenes de Compra
-  </button>
+<button onclick="window.location.href='ocs.html'">
+  Órdenes de Compra
+</button>
 
-  <button onclick="logout()">
-    Cerrar sesión
-  </button>
-</nav>
+<button onclick="logout()">Cerrar sesión</button>
 
-<section>
-  <p>Bienvenido al sistema interno de control.</p>
-  <p>Desde aquí podrás acceder a los módulos disponibles.</p>
-</section>
-
-<script type="module" src="js/auth.js"></script>
-
+<script type="module" src="js/auth-guard.js"></script>
 </body>
 </html>
