@@ -1,36 +1,50 @@
 import { auth } from "./firebase.js";
 import {
-  signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// LOGIN
-const loginBtn = document.getElementById("loginBtn");
-if (loginBtn) {
-  loginBtn.onclick = async () => {
-    const email = email.value;
-    const password = password.value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "dashboard.html";
-    } catch (e) {
-      document.getElementById("msg").innerText = e.message;
-    }
-  };
-}
-
-// PROTECCIÓN GLOBAL
+/**
+ * PROTECCIÓN GLOBAL
+ * - Si no hay usuario → login
+ * - Si hay usuario → muestra email
+ */
 onAuthStateChanged(auth, (user) => {
-  const isLogin = window.location.pathname.includes("login");
-  if (!user && !isLogin) {
+  const path = window.location.pathname;
+
+  // Si no hay sesión y NO estás en login → redirige
+  if (!user && !path.endsWith("login.html")) {
     window.location.href = "login.html";
+    return;
+  }
+
+  // Si hay sesión y estás en login → dashboard
+  if (user && path.endsWith("login.html")) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Mostrar usuario si existe el placeholder
+  const estado = document.getElementById("estado");
+  if (estado && user) {
+    estado.innerText = "Sesión iniciada como: " + user.email;
   }
 });
 
-// LOGOUT (se usará en otras páginas)
-window.logout = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
+/**
+ * LOGOUT ÚNICO Y DEFINITIVO
+ */
+window.logout = async function () {
+  try {
+    await signOut(auth);
+
+    // Limpieza dura de estado del navegador
+    sessionStorage.clear();
+    localStorage.clear();
+
+    // Redirección forzada
+    window.location.replace("login.html");
+  } catch (e) {
+    console.error("Error al cerrar sesión:", e);
+  }
 };
