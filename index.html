@@ -41,6 +41,8 @@
     tbody.innerHTML = "";
 
     const snapshot = await getDocs(collection(db, "ordenes_compra"));
+    console.log("Colección ordenes_compra, docs encontrados:", snapshot.size);
+
 
     snapshot.forEach((doc) => {
       const d = doc.data();
@@ -70,10 +72,16 @@
     await listarOCs();
   });
 
-  document.getElementById("logout").onclick = async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  };
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("logout");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "login.html";
+      });
+    }
+  });
+
 </script>
 
 </body>
