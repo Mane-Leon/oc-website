@@ -2,38 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Login OC</title>
+  <title>Login</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Login</h2>
+<h2>Ingreso al sistema</h2>
 
-<input type="email" id="email" placeholder="Correo"><br><br>
-<input type="password" id="password" placeholder="Contraseña"><br><br>
-<button onclick="login()">Entrar</button>
+<input type="email" id="email" placeholder="Correo">
+<input type="password" id="password" placeholder="Contraseña">
+<button id="loginBtn">Entrar</button>
 
-<p id="mensaje"></p>
+<p id="msg"></p>
 
-<script type="module">
-  import { auth } from "./js/firebase.js";
-  import { signInWithEmailAndPassword } from
-    "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-
-  window.login = function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        document.getElementById("mensaje").innerText = "Login correcto";
-        window.location.href = "index.html";
-      })
-      .catch(error => {
-        document.getElementById("mensaje").innerText = error.message;
-      });
-  };
-</script>
-
+<script type="module" src="js/auth.js"></script>
 </body>
 </html>
