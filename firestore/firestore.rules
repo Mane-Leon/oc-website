@@ -1,0 +1,261 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasValidSessionLease() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/session_leases/$(request.auth.uid))
+        && get(/databases/$(database)/documents/session_leases/$(request.auth.uid)).data.expires_at is timestamp
+        && get(/databases/$(database)/documents/session_leases/$(request.auth.uid)).data.expires_at > request.time;
+    }
+
+    function hasUserDoc() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userData() {
+      return hasUserDoc()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data
+        : {};
+    }
+
+    function userRole() {
+      return userData().role is string
+        ? userData().role.lower()
+        : "";
+    }
+
+    function isAdmin() {
+      return signedIn() && (
+        userRole() == "admin"
+        || userRole() == "admin_principal"
+        || userRole() == "admin principal"
+        || userRole() == "admin-principal"
+      );
+    }
+
+    function isOperaciones() {
+      return signedIn() && (userRole() == "operaciones" || userRole() == "operativo");
+    }
+
+    function isVentas() {
+      return signedIn() && userRole() == "ventas";
+    }
+
+    function changedOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function authEmailRaw() {
+      return signedIn() && request.auth.token.email is string
+        ? request.auth.token.email
+        : "";
+    }
+
+    function authEmailLower() {
+      return authEmailRaw().lower();
+    }
+
+    function isPendienteAssignerUidData(data) {
+      return signedIn()
+        && data.asignado_por_uid is string
+        && data.asignado_por_uid == request.auth.uid;
+    }
+
+    function isPendienteAssignerEmailData(data) {
+      return signedIn()
+        && data.asignado_por_correo is string
+        && (
+          data.asignado_por_correo == authEmailRaw()
+          || data.asignado_por_correo.lower() == authEmailLower()
+        );
+    }
+
+    function isPendienteAssignerData(data) {
+      return isPendienteAssignerUidData(data)
+        || isPendienteAssignerEmailData(data);
+    }
+
+    function isPendienteResponsibleUidData(data) {
+      return signedIn()
+        && request.auth.uid in data.responsable_uids;
+    }
+
+    function isPendienteResponsibleEmailData(data) {
+      return signedIn()
+        && (
+          authEmailRaw() in data.responsable_correos
+          || authEmailLower() in data.responsable_correos
+        );
+    }
+
+    function isPendienteResponsibleData(data) {
+      return isPendienteResponsibleUidData(data)
+        || isPendienteResponsibleEmailData(data);
+    }
+
+    function isPendienteParticipantUidData(data) {
+      return signedIn()
+        && request.auth.uid in data.participantes_uids;
+    }
+
+    function isPendienteParticipantEmailData(data) {
+      return signedIn()
+        && (
+          authEmailRaw() in data.participantes_correos
+          || authEmailLower() in data.participantes_correos
+        );
+    }
+
+    match /users/{userId} {
+      // Necesario para listar usuarios en dropdowns (OCs y Pendientes).
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /session_leases/{userId} {
+      allow read: if signedIn() && userId == request.auth.uid;
+      allow create, update: if
+        signedIn()
+        && userId == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.expires_at is timestamp
+        && request.resource.data.expires_at > request.time
+        && request.resource.data.expires_at < request.time + duration.value(2, "m");
+      allow delete: if signedIn() && userId == request.auth.uid;
+    }
+
+    match /inventario/{doc} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /ordenes_compra/{id} {
+      allow read: if signedIn();
+
+      // CREATE: admin, ventas y operaciones.
+      allow create: if
+        (isAdmin() || isVentas() || isOperaciones())
+        && request.resource.data.cliente is string
+        && request.resource.data.cliente.size() > 0
+        && request.resource.data.prioridad in ["baja", "media", "alta"]
+        && request.resource.data.fecha_oc is string
+        && request.resource.data.vendedor_nombre is string
+        && request.resource.data.vendedor_correo is string
+        && request.resource.data.vendedor_uid is string
+        && request.resource.data.notas is string
+        && request.resource.data.estado == "por_surtir"
+        && request.resource.data.estado_index == 0
+        && (
+          request.resource.data.ruta == null
+          || request.resource.data.ruta in ["almacen", "sucursal", "alemania"]
+        );
+
+      allow delete: if isAdmin();
+
+      allow update: if
+        isAdmin()
+        || (
+          isOperaciones()
+          && request.resource.data.cliente == resource.data.cliente
+          && request.resource.data.vendedor_nombre == resource.data.vendedor_nombre
+        )
+        || (
+          isVentas()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["prioridad"])
+        );
+    }
+
+    match /pendientes/{id} {
+      allow read: if isPendienteAssignerUidData(resource.data);
+      allow read: if isPendienteResponsibleUidData(resource.data);
+      allow read: if isPendienteParticipantUidData(resource.data);
+      allow read: if isPendienteAssignerEmailData(resource.data);
+      allow read: if isPendienteResponsibleEmailData(resource.data);
+      allow read: if isPendienteParticipantEmailData(resource.data);
+      allow read: if isAdmin();
+
+      allow create: if
+        signedIn()
+        && request.resource.data.asignado_por_uid == request.auth.uid
+        && request.resource.data.asunto is string
+        && request.resource.data.asunto.size() > 0
+        && request.resource.data.estado == "activo"
+        && request.resource.data.responsable_uids is list
+        && request.resource.data.responsable_uids.size() > 0
+        && request.resource.data.responsable_correos is list
+        && request.resource.data.responsable_correos.size() > 0;
+
+      allow update: if
+        // Admin total.
+        isAdmin()
+
+        // Asignador edita contenido.
+        || (
+          isPendienteAssignerData(resource.data)
+          && request.resource.data.asignado_por_uid == resource.data.asignado_por_uid
+          && request.resource.data.estado == resource.data.estado
+          && request.resource.data.responsable_uids is list
+          && request.resource.data.responsable_uids.size() > 0
+        )
+
+        // Responsable solicita cierre.
+        || (
+          isPendienteResponsibleData(resource.data)
+          && resource.data.estado == "activo"
+          && request.resource.data.estado == "cierre_solicitado"
+          && request.resource.data.cierre_solicitado_por_uid == request.auth.uid
+          && changedOnly([
+            "estado",
+            "cierre_solicitado_por_uid",
+            "cierre_solicitado_por_nombre",
+            "cierre_solicitado_por_correo",
+            "cierre_solicitado_en",
+            "updated_at"
+          ])
+        )
+
+        // Asignador acepta cierre.
+        || (
+          isPendienteAssignerData(resource.data)
+          && resource.data.estado == "cierre_solicitado"
+          && request.resource.data.estado == "cerrado"
+          && request.resource.data.cerrado_por_uid == request.auth.uid
+          && changedOnly([
+            "estado",
+            "cerrado_por_uid",
+            "cerrado_por_nombre",
+            "cerrado_por_correo",
+            "cerrado_en",
+            "updated_at"
+          ])
+        )
+
+        // Asignador rechaza cierre y regresa a activo.
+        || (
+          isPendienteAssignerData(resource.data)
+          && resource.data.estado == "cierre_solicitado"
+          && request.resource.data.estado == "activo"
+          && request.resource.data.cierre_rechazado_por_uid == request.auth.uid
+          && changedOnly([
+            "estado",
+            "cierre_rechazado_por_uid",
+            "cierre_rechazado_por_nombre",
+            "cierre_rechazado_en",
+            "cierre_solicitado_por_uid",
+            "cierre_solicitado_por_nombre",
+            "cierre_solicitado_por_correo",
+            "cierre_solicitado_en",
+            "updated_at"
+          ])
+        );
+
+      allow delete: if isAdmin() || isPendienteAssignerData(resource.data);
+    }
+  }
+}

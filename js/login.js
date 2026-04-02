@@ -1,6 +1,9 @@
 import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from
+import {
+  signInWithEmailAndPassword
+} from
   "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { markSessionTabActive, touchSessionActivity } from "./session.js";
 
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("email").value;
@@ -8,6 +11,8 @@ document.getElementById("loginBtn").onclick = async () => {
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
+    markSessionTabActive();
+    touchSessionActivity(true);
     window.location.href = "index.html";
   } catch (e) {
     document.getElementById("msg").innerText = e.message;

@@ -2,30 +2,112 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Órdenes de Compra</title>
+  <title>Ordenes de Compra</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>Órdenes de Compra</h1>
+<header class="topbar">
+  <div>
+    <h1>Ordenes de Compra</h1>
+    <div class="subinfo">
+      <span id="estado"></span>
+      <span id="role"></span>
+    </div>
+  </div>
 
-<button onclick="window.location.href='index.html'">Dashboard</button>
-<button onclick="logout()">Cerrar sesión</button>
+  <div class="topbar-actions">
+    <button id="btn-crear" style="display:none;">Nueva OC</button>
+    <button onclick="window.location.href='pendientes.html'">Pendientes</button>
+    <button onclick="window.location.href='index.html'">Dashboard</button>
+    <button onclick="logout()">Cerrar sesion</button>
+  </div>
+</header>
 
-<table border="1">
-  <thead>
-    <tr>
-      <th>OC</th>
-      <th>Cliente</th>
-      <th>Estado</th>
-      <th>Prioridad</th>
-      <th>Fecha</th>
-      <th>Vendedor</th>
-    </tr>
-  </thead>
-  <tbody id="tabla-ocs"></tbody>
-</table>
+<main>
+  <section class="table-tools">
+    <div class="tool-row">
+      <div class="tool-group">
+        <label for="filtro-texto">Buscar</label>
+        <input id="filtro-texto" type="text" placeholder="OC, cliente, vendedor o notas">
+      </div>
+
+      <div class="tool-group">
+        <label for="filtro-estado">Estado</label>
+        <select id="filtro-estado">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label for="filtro-prioridad">Prioridad</label>
+        <select id="filtro-prioridad">
+          <option value="">Todas</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label for="filtro-notas">Notas</label>
+        <select id="filtro-notas">
+          <option value="">Todas</option>
+          <option value="si">Con notas</option>
+          <option value="no">Sin notas</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label>&nbsp;</label>
+        <button id="btn-limpiar-filtros" type="button">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <div class="tool-row">
+      <div class="tool-group tool-group-wide">
+        <label>Columnas visibles</label>
+        <div id="columnas-toggle" class="column-toggles"></div>
+      </div>
+
+      <div class="tool-group tool-group-inline">
+        <button id="btn-restaurar-filas" type="button">Mostrar filas ocultas</button>
+        <span id="filas-ocultas-count">0 ocultas</span>
+      </div>
+    </div>
+  </section>
+
+  <p id="ocs-contexto-msg" class="dashboard-msg"></p>
+  <p>Doble clic en una OC para ver detalle.</p>
+  <table>
+    <thead id="tabla-ocs-head">
+      <tr>
+        <th data-col="oc" data-sort="oc" class="sortable">OC</th>
+        <th data-col="cliente" data-sort="cliente" class="sortable">Cliente</th>
+        <th data-col="estado" data-sort="estado" class="sortable">Estado</th>
+        <th data-col="accion">Accion</th>
+        <th data-col="prioridad" data-sort="prioridad" class="sortable">Prioridad</th>
+        <th data-col="fecha" data-sort="fecha" class="sortable">Fecha</th>
+        <th data-col="vendedor" data-sort="vendedor" class="sortable">Vendedor</th>
+        <th data-col="notas" data-sort="notas" class="sortable">Notas</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-ocs"></tbody>
+  </table>
+</main>
+
+<div id="detalle-oc-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card">
+    <h2>Detalle de OC</h2>
+    <div id="detalle-oc-body"></div>
+    <div class="modal-actions">
+      <button id="detalle-oc-ocultar" type="button">Ocultar fila</button>
+      <button id="detalle-oc-editar" type="button" style="display:none;">Editar OC</button>
+      <button id="detalle-oc-borrar" class="btn-danger" type="button" style="display:none;">Borrar OC</button>
+      <button id="detalle-oc-cerrar-2" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <script type="module" src="js/auth-guard.js"></script>
 <script type="module" src="js/ocs.js"></script>
+
 </body>
 </html>

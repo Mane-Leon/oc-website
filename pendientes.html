@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pendientes</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>Pendientes</h1>
+    <div class="subinfo">
+      <span id="estado"></span>
+      <span id="role"></span>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <button id="btn-crear-pendiente">Nuevo pendiente</button>
+    <button onclick="window.location.href='index.html'">Dashboard</button>
+    <button onclick="window.location.href='ocs.html'">Ordenes de Compra</button>
+    <button onclick="logout()">Cerrar sesion</button>
+  </div>
+</header>
+
+<main>
+  <section class="table-tools">
+    <div class="tool-row">
+      <div class="tool-group">
+        <label for="filtro-texto">Buscar</label>
+        <input id="filtro-texto" type="text" placeholder="Asunto, notas, asignador, responsables">
+      </div>
+
+      <div class="tool-group">
+        <label for="filtro-estado">Estado</label>
+        <select id="filtro-estado">
+          <option value="">Todos</option>
+          <option value="activo">Activo</option>
+          <option value="cierre_solicitado">Cierre solicitado</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label for="filtro-urgencia">Urgencia</label>
+        <select id="filtro-urgencia">
+          <option value="">Todas</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label for="gestion-bandeja">Bandeja</label>
+        <select id="gestion-bandeja">
+          <option value="a-mi">Asignados a mi</option>
+          <option value="por-mi">Asignados por mi</option>
+          <option value="todos">Todos (admin)</option>
+        </select>
+      </div>
+
+      <div class="tool-group" id="gestion-admin-persona-wrap" hidden>
+        <label for="gestion-admin-persona">Persona (admin)</label>
+        <select id="gestion-admin-persona">
+          <option value="">Todas las personas</option>
+        </select>
+      </div>
+
+      <div class="tool-group">
+        <label>&nbsp;</label>
+        <button id="btn-limpiar-filtros" type="button">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <div id="gestion-resumen" class="estado-chips"></div>
+  </section>
+
+  <p id="pendientes-msg">Cargando pendientes...</p>
+  <p>Doble clic en una fila para ver detalle.</p>
+
+  <table>
+    <thead id="tabla-pendientes-head">
+      <tr>
+        <th data-sort="id" class="sortable">ID</th>
+        <th data-sort="asunto" class="sortable">Asunto</th>
+        <th data-sort="estado" class="sortable">Estado</th>
+        <th data-sort="urgencia" class="sortable">Urgencia</th>
+        <th data-sort="fecha_entrada" class="sortable">Entrada</th>
+        <th data-sort="fecha_resolucion_propuesta" class="sortable">Resolucion propuesta</th>
+        <th data-sort="asignado_por" class="sortable">Asignado por</th>
+        <th data-sort="responsables" class="sortable">Responsables</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-pendientes"></tbody>
+  </table>
+</main>
+
+<div id="detalle-pendiente-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card">
+    <h2>Detalle de pendiente</h2>
+    <div id="detalle-pendiente-body"></div>
+    <div class="modal-actions">
+      <button id="detalle-pendiente-solicitar-cierre" type="button">Solicitar cierre</button>
+      <button id="detalle-pendiente-aceptar-cierre" type="button">Aceptar cierre</button>
+      <button id="detalle-pendiente-rechazar-cierre" type="button">Rechazar cierre</button>
+      <button id="detalle-pendiente-editar" type="button">Editar</button>
+      <button id="detalle-pendiente-eliminar" type="button">Eliminar</button>
+      <button id="detalle-pendiente-cerrar-modal" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/auth-guard.js"></script>
+<script type="module" src="js/pendientes.js"></script>
+
+</body>
+</html>

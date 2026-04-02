@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nueva OC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1 id="oc-form-title">Nueva Orden de Compra</h1>
+    <div class="subinfo">
+      <span id="estado"></span>
+      <span id="role"></span>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <button onclick="window.location.href='pendientes.html'">Pendientes</button>
+    <button onclick="window.location.href='ocs.html'">Volver a OCs</button>
+    <button onclick="logout()">Cerrar sesion</button>
+  </div>
+</header>
+
+<main>
+  <section class="form-card">
+    <form id="form-oc" class="oc-form">
+      <label for="cliente">Cliente</label>
+      <input id="cliente" name="cliente" type="text" required>
+
+      <label for="prioridad">Prioridad</label>
+      <select id="prioridad" name="prioridad">
+        <option value="baja">Baja</option>
+        <option value="media" selected>Media</option>
+        <option value="alta">Alta</option>
+      </select>
+
+      <label for="fecha_oc">Fecha de OC</label>
+      <input id="fecha_oc" name="fecha_oc" type="date">
+
+      <label for="vendedor_uid">Vendedor (role ventas)</label>
+      <select id="vendedor_uid" name="vendedor_uid">
+        <option value="">Selecciona un vendedor</option>
+      </select>
+
+      <label for="notas">Notas</label>
+      <textarea id="notas" name="notas" rows="4" placeholder="Notas internas (opcional)"></textarea>
+
+      <p class="form-help">La ruta se asigna despues en la pantalla general de OCs.</p>
+      <button id="btn-guardar-oc" type="submit">Guardar OC</button>
+      <p id="msg"></p>
+    </form>
+  </section>
+</main>
+
+<script type="module" src="js/auth-guard.js"></script>
+<script type="module" src="js/nueva-oc.js"></script>
+
+</body>
+</html>

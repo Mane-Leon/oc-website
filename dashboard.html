@@ -7,16 +7,124 @@
 </head>
 <body>
 
-<h1>Dashboard</h1>
+<header class="topbar">
+  <div>
+    <h1>Dashboard</h1>
+    <div class="subinfo">
+      <span id="estado"></span>
+      <span id="role"></span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button onclick="window.location.href='ocs.html'">Ordenes de Compra</button>
+    <button onclick="window.location.href='pendientes.html'">Pendientes</button>
+    <button onclick="logout()">Cerrar sesion</button>
+  </div>
+</header>
 
-<nav>
-  <button onclick="window.location.href='ocs.html'">Órdenes de Compra</button>
-  <button onclick="logout()">Cerrar sesión</button>
-</nav>
+<main>
+  <section class="dashboard-block">
+    <h2>Mis OCs</h2>
+    <p class="dashboard-help">
+      Vista rapida con tus OCs asignadas. Para operar todas las OCs en curso usa la pantalla de OCs.
+    </p>
+    <p id="mis-ocs-msg" class="dashboard-msg">Cargando...</p>
+    <p class="dashboard-help">Haz clic en una tarjeta para abrir la vista correspondiente en OCs.</p>
+    <p class="dashboard-help">Doble clic en una fila para abrir el detalle de esa OC en la pantalla de OCs.</p>
 
-<p>Bienvenido al sistema de control.</p>
+    <div class="kpi-grid">
+      <article class="kpi-card kpi-card-action" data-nav-href="ocs.html?scope=mine" role="button" tabindex="0">
+        <p class="kpi-label">Total</p>
+        <p id="kpi-total" class="kpi-value">0</p>
+      </article>
+      <article class="kpi-card kpi-card-action" data-nav-href="ocs.html?scope=mine&estado_scope=open" role="button" tabindex="0">
+        <p class="kpi-label">En curso</p>
+        <p id="kpi-en-curso" class="kpi-value">0</p>
+      </article>
+      <article class="kpi-card kpi-card-action" data-nav-href="ocs.html?scope=mine&estado_scope=closed" role="button" tabindex="0">
+        <p class="kpi-label">Cerradas</p>
+        <p id="kpi-cerradas" class="kpi-value">0</p>
+      </article>
+    </div>
 
-<script type="module" src="js/auth.js"></script>
+    <div class="estado-breakdown">
+      <h3>Desglose por estado</h3>
+      <div id="mis-ocs-estados" class="estado-chips"></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>OC</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="mis-ocs-body"></tbody>
+    </table>
+  </section>
+
+  <section class="dashboard-block">
+    <h2>Mis Pendientes</h2>
+    <p class="dashboard-help">
+      Aqui se muestran pendientes que te asignaron y los que tu asignaste.
+    </p>
+    <p id="mis-pendientes-msg" class="dashboard-msg">Cargando pendientes...</p>
+    <p class="dashboard-help">Haz clic en una tarjeta para abrir la vista correspondiente en Pendientes.</p>
+    <p class="dashboard-help">Doble clic en una fila para abrir el detalle de ese pendiente en la pantalla de Pendientes.</p>
+
+    <div class="kpi-grid">
+      <article class="kpi-card kpi-card-action" data-nav-href="pendientes.html?bandeja=a-mi" role="button" tabindex="0">
+        <p class="kpi-label">Asignados a mi</p>
+        <p id="kpi-pendientes-mi" class="kpi-value">0</p>
+      </article>
+      <article class="kpi-card kpi-card-action" data-nav-href="pendientes.html?bandeja=por-mi" role="button" tabindex="0">
+        <p class="kpi-label">Asignados por mi</p>
+        <p id="kpi-pendientes-por-mi" class="kpi-value">0</p>
+      </article>
+      <article class="kpi-card kpi-card-action" data-nav-href="pendientes.html?bandeja=por-mi&estado=cierre_solicitado" role="button" tabindex="0">
+        <p class="kpi-label">Cierre solicitado</p>
+        <p id="kpi-pendientes-cierre" class="kpi-value">0</p>
+      </article>
+    </div>
+
+    <h3>Asignados a mi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Asunto</th>
+          <th>Estado</th>
+          <th>Urgencia</th>
+          <th>Entrada</th>
+          <th>Resolucion propuesta</th>
+          <th>Asignado por</th>
+        </tr>
+      </thead>
+      <tbody id="mis-pendientes-a-mi-body"></tbody>
+    </table>
+
+    <h3>Asignados por mi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Asunto</th>
+          <th>Estado</th>
+          <th>Urgencia</th>
+          <th>Entrada</th>
+          <th>Resolucion propuesta</th>
+          <th>Responsables</th>
+        </tr>
+      </thead>
+      <tbody id="mis-pendientes-por-mi-body"></tbody>
+    </table>
+  </section>
+</main>
+
+<script type="module" src="js/auth-guard.js"></script>
 <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>

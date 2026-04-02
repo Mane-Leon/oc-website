@@ -1,0 +1,21 @@
+# OS/editor noise
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# Local Firebase Admin credentials
+*firebase-adminsdk*.json
+*firebase-adminsdk*.JSON
+
+# Generated exports
+carga oc sistema/ocs_descarga.xlsx
+
+# Local/internal notes and user examples
+BITACORA_INSTRUCCIONES_Y_OBJETIVOS.txt
+firestore/users.txt

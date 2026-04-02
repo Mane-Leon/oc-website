@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo pendiente</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1 id="pendiente-form-title">Nuevo pendiente</h1>
+    <div class="subinfo">
+      <span id="estado"></span>
+      <span id="role"></span>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <button onclick="window.location.href='pendientes.html'">Volver a pendientes</button>
+    <button onclick="window.location.href='ocs.html'">Ir a OCs</button>
+    <button onclick="logout()">Cerrar sesion</button>
+  </div>
+</header>
+
+<main>
+  <section class="form-card">
+    <form id="form-pendiente" class="oc-form">
+      <label for="asunto">Asunto</label>
+      <input id="asunto" name="asunto" type="text" required>
+
+      <label for="urgencia">Urgencia</label>
+      <select id="urgencia" name="urgencia">
+        <option value="baja">Baja</option>
+        <option value="media" selected>Media</option>
+        <option value="alta">Alta</option>
+      </select>
+
+      <label for="fecha_entrada">Fecha de entrada</label>
+      <input id="fecha_entrada" name="fecha_entrada" type="date" required>
+
+      <label for="fecha_resolucion_propuesta">Fecha propuesta de resolucion</label>
+      <input id="fecha_resolucion_propuesta" name="fecha_resolucion_propuesta" type="date">
+
+      <label for="responsables_uids">Responsables (puedes seleccionar varios)</label>
+      <select id="responsables_uids" name="responsables_uids" multiple size="8"></select>
+      <div class="form-inline-actions">
+        <button id="btn-seleccionarme" type="button">Seleccionarme</button>
+        <span id="responsables-count">0 seleccionados</span>
+      </div>
+
+      <label for="notas">Notas</label>
+      <textarea id="notas" name="notas" rows="5" placeholder="Detalles del pendiente"></textarea>
+
+      <p class="form-help">
+        Creador y responsables podran verlo. Para multiseleccion usa Ctrl/Cmd + clic.
+      </p>
+
+      <button id="btn-guardar-pendiente" type="submit">Guardar pendiente</button>
+      <p id="msg-pendiente"></p>
+    </form>
+  </section>
+</main>
+
+<script type="module" src="js/auth-guard.js"></script>
+<script type="module" src="js/nuevo-pendiente.js"></script>
+
+</body>
+</html>
